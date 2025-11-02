@@ -26,7 +26,6 @@ export default function Home() {
   const supabase = createClient()
 
   useEffect(() => {
-    // Check if user is already logged in
     const checkUser = async () => {
       const {
         data: { user },
@@ -41,7 +40,6 @@ export default function Home() {
     setIsHydrated(true)
   }, [])
 
-  // Show login prompt after 3 messages
   useEffect(() => {
     const userMessages = messages.filter((m) => !m.isResponse)
     if (userMessages.length >= 3) {
@@ -52,7 +50,6 @@ export default function Home() {
   const handleSendMessage = async (message: string) => {
     console.log("[v0] handleSendMessage called with:", message)
 
-    // 1. Add user message
     const userMessage: Message = {
       id: Date.now().toString(),
       text: message,
@@ -61,7 +58,6 @@ export default function Home() {
     }
     setMessages((prev) => [...prev, userMessage])
 
-    // 2. Add initial loading message
     const loadingMessageId = (Date.now() + 1).toString()
     const initialLoadingMessage: Message = {
       id: loadingMessageId,
@@ -140,21 +136,28 @@ export default function Home() {
   }
 
   return (
-    <div className="flex flex-col h-screen bg-background">
+    <div className="flex flex-col h-screen bg-background relative overflow-hidden">
+      <div className="absolute inset-0 bg-grid-pattern opacity-[0.02] pointer-events-none" />
+
       <TopBar showAuth={true} />
 
       {showLoginPrompt && (
-        <div className="bg-primary text-primary-foreground px-4 py-3 text-center">
-          <p className="text-sm font-medium">
+        <div className="bg-foreground text-background px-4 py-3 text-center relative z-10 border-b border-border">
+          <p className="text-sm font-semibold">
             Want to save your chat history?{" "}
-            <Button asChild variant="secondary" size="sm" className="ml-2">
+            <Button
+              asChild
+              variant="secondary"
+              size="sm"
+              className="ml-2 bg-background text-foreground hover:bg-background/90"
+            >
               <Link href="/auth/sign-up">Sign up for free</Link>
             </Button>
           </p>
         </div>
       )}
 
-      <div className="flex-1 overflow-hidden">
+      <div className="flex-1 overflow-hidden relative z-10">
         <ChatInterface messages={messages} onSendMessage={handleSendMessage} />
       </div>
     </div>

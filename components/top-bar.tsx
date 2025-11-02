@@ -1,6 +1,7 @@
 import { FaGithub } from "react-icons/fa"
 import { Button } from "@/components/ui/button"
 import Link from "next/link"
+import { Sparkles } from "lucide-react"
 
 interface TopBarProps {
   showAuth?: boolean
@@ -8,28 +9,32 @@ interface TopBarProps {
 
 export default function TopBar({ showAuth = true }: TopBarProps) {
   return (
-    <div className="bg-background border-b border-border px-8 py-5 flex items-center justify-between">
-      {/* Left Side: Logo and Title */}
-      <div className="flex items-center gap-4">
-        <div className="w-10 h-10 bg-gradient-to-br from-primary to-primary/80 rounded-xl flex items-center justify-center shadow-lg">
-          <span className="text-primary-foreground font-black text-lg">A</span>
+    <div className="bg-background/80 backdrop-blur-xl border-b border-border px-6 py-4 flex items-center justify-between sticky top-0 z-50">
+      <Link href="/" className="flex items-center gap-3 group">
+        <div className="relative">
+          <div className="absolute inset-0 bg-gradient-to-br from-foreground to-foreground/60 rounded-xl blur-sm opacity-50 group-hover:opacity-70 transition-opacity" />
+          <div className="relative w-11 h-11 bg-gradient-to-br from-foreground to-foreground/80 rounded-xl flex items-center justify-center shadow-lg group-hover:scale-105 transition-transform">
+            <Sparkles className="text-background" size={20} strokeWidth={2.5} />
+          </div>
         </div>
         <div>
-          <h1 className="text-2xl font-black text-foreground tracking-tighter">AnimAI</h1>
-          <p className="text-xs text-muted-foreground font-semibold">Math • Physics • Chemistry</p>
+          <h1 className="text-2xl font-black text-foreground tracking-tight group-hover:tracking-normal transition-all">
+            AnimAI
+          </h1>
+          <p className="text-[10px] text-muted-foreground font-bold uppercase tracking-wider">
+            Math • Physics • Chemistry
+          </p>
         </div>
-      </div>
+      </Link>
 
       {/* Right Side Content */}
-      <div className="flex items-center gap-4">
-        <p className="text-muted-foreground text-sm hidden sm:block font-semibold">Scientific AI-Powered Animations</p>
-
+      <div className="flex items-center gap-3">
         {showAuth && (
           <div className="flex items-center gap-2">
-            <Button asChild variant="ghost" size="sm">
+            <Button asChild variant="ghost" size="sm" className="font-semibold">
               <Link href="/auth/login">Login</Link>
             </Button>
-            <Button asChild size="sm">
+            <Button asChild size="sm" className="font-semibold shadow-sm hover:shadow-md transition-shadow">
               <Link href="/auth/sign-up">Sign Up</Link>
             </Button>
           </div>
@@ -39,7 +44,7 @@ export default function TopBar({ showAuth = true }: TopBarProps) {
           href="https://github.com/pushpitkamboj/AnimAI"
           target="_blank"
           rel="noopener noreferrer"
-          className="text-muted-foreground hover:text-foreground transition-all duration-300 hover:scale-110"
+          className="text-muted-foreground hover:text-foreground transition-all duration-300 hover:scale-110 p-2 rounded-lg hover:bg-muted"
           aria-label="View AnimAI on GitHub"
         >
           <FaGithub size={20} />

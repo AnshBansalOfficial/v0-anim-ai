@@ -4,7 +4,7 @@ import type React from "react"
 
 import { useState, useRef, useEffect } from "react"
 import MessageItem from "./message-item"
-import { Send, Sparkles } from "lucide-react"
+import { Send, Sparkles, Zap } from "lucide-react"
 
 interface Message {
   id: string
@@ -31,7 +31,7 @@ const EXAMPLE_PROMPTS = [
   },
   {
     icon: "●",
-    text: "Derive the parameter of a circle",
+    text: "Show a rotating cube on plane",
   },
 ]
 
@@ -81,42 +81,52 @@ export default function ChatInterface({ messages, onSendMessage }: ChatInterface
     <div className="flex flex-col h-full bg-background">
       {/* Messages Area */}
       <div className="flex-1 overflow-y-auto flex flex-col items-center w-full px-4">
-        <div className="w-full max-w-2xl py-8">
+        <div className="w-full max-w-3xl py-8">
           {messages.length === 0 ? (
-            <div className="flex items-center justify-center h-full min-h-96">
-              <div className="text-center max-w-xl">
-                <div className="w-20 h-20 bg-gradient-to-br from-primary to-primary/80 rounded-2xl flex items-center justify-center mx-auto mb-6 shadow-lg">
-                  <Sparkles className="text-primary-foreground" size={40} strokeWidth={1.5} />
+            <div className="flex items-center justify-center h-full min-h-[400px]">
+              <div className="text-center max-w-2xl">
+                <div className="relative mb-6">
+                  <div className="absolute inset-0 bg-gradient-to-br from-foreground/10 to-foreground/5 rounded-3xl blur-3xl" />
+                  <div className="relative w-20 h-20 bg-gradient-to-br from-foreground via-foreground/90 to-foreground/70 rounded-3xl flex items-center justify-center mx-auto shadow-2xl">
+                    <Sparkles className="text-background" size={40} strokeWidth={2} />
+                  </div>
                 </div>
-                <h1 className="text-foreground text-4xl font-black mb-2">AnimAI Studio</h1>
-                <p className="text-muted-foreground text-base mb-8 font-medium leading-relaxed">
-                  Generate stunning <span className="font-bold text-foreground">Math, Physics & Chemistry</span>{" "}
-                  animations with AI
+
+                <h1 className="text-foreground text-4xl font-black mb-2 tracking-tight">AnimAI Studio</h1>
+                <p className="text-muted-foreground text-base mb-8 font-medium leading-relaxed max-w-lg mx-auto">
+                  Great Animations Take Time. Ours? Just 5 Mins.
                 </p>
 
-                <div className="space-y-3 text-left bg-muted p-6 rounded-2xl border border-border">
-                  <p className="text-foreground text-xs font-bold uppercase tracking-widest">Try these:</p>
-                  <ul className="text-muted-foreground text-sm space-y-3">
+                <div className="space-y-4 text-left bg-gradient-to-br from-muted/80 to-muted/40 p-6 rounded-3xl border-2 border-border/50 shadow-lg backdrop-blur-sm">
+                  <div className="flex items-center gap-2 mb-3">
+                    <Zap className="text-foreground" size={16} strokeWidth={2.5} />
+                    <p className="text-foreground text-xs font-black uppercase tracking-widest">Quick Start</p>
+                  </div>
+                  <ul className="text-muted-foreground space-y-3">
                     {EXAMPLE_PROMPTS.map((prompt, index) => (
                       <li
                         key={index}
                         onClick={() => handleExampleClick(prompt.text)}
-                        className="flex items-center gap-3 p-2 rounded-lg hover:bg-accent transition-all cursor-pointer group"
+                        className="flex items-center gap-4 p-5 rounded-xl hover:bg-background/80 transition-all cursor-pointer group border border-transparent hover:border-border/50 hover:shadow-md"
                       >
-                        <span className="text-lg group-hover:scale-110 transition-transform">{prompt.icon}</span>
-                        <span className="font-medium group-hover:text-foreground transition-colors">{prompt.text}</span>
+                        <div className="w-12 h-12 bg-foreground/5 rounded-lg flex items-center justify-center group-hover:bg-foreground/10 group-hover:scale-110 transition-all flex-shrink-0">
+                          <span className="text-3xl font-bold">{prompt.icon}</span>
+                        </div>
+                        <span className="font-semibold text-base group-hover:text-foreground transition-colors flex-1">
+                          {prompt.text}
+                        </span>
+                        <Send
+                          className="text-muted-foreground/50 group-hover:text-foreground group-hover:translate-x-1 transition-all flex-shrink-0"
+                          size={18}
+                        />
                       </li>
                     ))}
                   </ul>
                 </div>
-
-                <p className="text-muted-foreground text-xs mt-8 leading-relaxed font-medium">
-                  Rendering takes 2–3 minutes. Grab some coffee while we work our magic ☕
-                </p>
               </div>
             </div>
           ) : (
-            <div className="space-y-3">
+            <div className="space-y-4">
               {messages.map((message) => (
                 <div key={message.id} className="animate-fade-in">
                   <MessageItem message={message} />
@@ -128,24 +138,23 @@ export default function ChatInterface({ messages, onSendMessage }: ChatInterface
         </div>
       </div>
 
-      {/* Input Area */}
-      <div className="border-t border-border p-6 bg-background">
-        <div className="flex gap-3 max-w-2xl mx-auto">
+      <div className="border-t border-border/50 p-6 bg-background/80 backdrop-blur-xl">
+        <div className="flex gap-3 max-w-3xl mx-auto">
           <textarea
             value={inputValue}
             onChange={(e) => setInputValue(e.target.value)}
             onKeyPress={handleKeyPress}
-            placeholder="Describe your animation… (e.g., 'Draw y = sin(x)' or 'Define a tangent to a circle')"
-            className="flex-1 bg-muted text-foreground placeholder-muted-foreground rounded-xl px-4 py-3 resize-none focus:outline-none focus:ring-2 focus:ring-ring border-0 transition-all font-medium text-sm shadow-sm hover:shadow-md focus:shadow-md"
+            placeholder="Describe your animation… (e.g., 'Draw y = sin(x)' or 'Visualize a pendulum')"
+            className="flex-1 bg-muted/80 text-foreground placeholder-muted-foreground rounded-2xl px-5 py-4 resize-none focus:outline-none focus:ring-2 focus:ring-foreground/20 border border-border/50 transition-all font-medium text-sm shadow-sm hover:shadow-lg focus:shadow-lg hover:border-border focus:border-foreground/30"
             rows={2}
             disabled={isLoading}
           />
           <button
             onClick={handleSend}
             disabled={isLoading || !inputValue.trim()}
-            className="bg-primary hover:bg-primary/90 disabled:opacity-50 disabled:cursor-not-allowed text-primary-foreground rounded-xl px-4 py-3 flex items-center justify-center transition-all font-semibold shadow-sm hover:shadow-md hover:scale-105 active:scale-95 duration-200"
+            className="bg-foreground hover:bg-foreground/90 disabled:opacity-50 disabled:cursor-not-allowed text-background rounded-2xl px-6 py-4 flex items-center justify-center transition-all font-bold shadow-lg hover:shadow-xl hover:scale-105 active:scale-95 duration-200 disabled:hover:scale-100"
           >
-            <Send size={20} strokeWidth={2} />
+            <Send size={20} strokeWidth={2.5} />
           </button>
         </div>
       </div>

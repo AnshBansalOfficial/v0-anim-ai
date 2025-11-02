@@ -17,8 +17,9 @@ interface MessageItemProps {
 
 const LOADING_STAGES = [
   { text: "Analyzing your request...", duration: 5000 },
-  { text: "Generating animation code...", duration: 15000 },
-  { text: "Rendering your animation...", duration: 25000 },
+  { text: "Generating animation code...", duration: 30000 },
+  { text: "Rendering your animation...", duration: 30000 },
+  { text: "Polishing the details...", duration: 45000 },
   { text: "Almost there! Finalizing...", duration: 0 },
 ]
 
@@ -122,7 +123,7 @@ export default function MessageItem({ message }: MessageItemProps) {
                 <span className="text-gray-600 dark:text-gray-400 font-medium">
                   Elapsed: {formatElapsedTime(elapsedTime)}
                 </span>
-                <span className="text-gray-600 dark:text-gray-400 font-medium">Est. 2-3 min</span>
+                <span className="text-gray-600 dark:text-gray-400 font-medium">Est. 4-5 min</span>
               </div>
             </div>
 
