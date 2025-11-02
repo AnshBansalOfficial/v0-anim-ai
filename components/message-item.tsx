@@ -1,5 +1,6 @@
 "use client"
-import { Zap } from "lucide-react"
+import { Zap, Loader2, Sparkles } from "lucide-react"
+import { useEffect, useState } from "react"
 
 interface Message {
   id: string
@@ -14,12 +15,57 @@ interface MessageItemProps {
   message: Message
 }
 
+const LOADING_STAGES = [
+  { text: "Analyzing your request...", duration: 3000 },
+  { text: "Generating animation code...", duration: 5000 },
+  { text: "Rendering your animation...", duration: 10000 },
+  { text: "Almost there! Finalizing...", duration: 0 },
+]
+
 export default function MessageItem({ message }: MessageItemProps) {
+  const [loadingStage, setLoadingStage] = useState(0)
+  const [elapsedTime, setElapsedTime] = useState(0)
+
+  useEffect(() => {
+    if (!message.isLoading) return
+
+    const startTime = Date.now()
+    const timer = setInterval(() => {
+      setElapsedTime(Math.floor((Date.now() - startTime) / 1000))
+    }, 1000)
+
+    let currentStage = 0
+    const stageTimers: NodeJS.Timeout[] = []
+
+    LOADING_STAGES.forEach((stage, index) => {
+      if (stage.duration > 0) {
+        const timeout = setTimeout(() => {
+          if (currentStage < LOADING_STAGES.length - 1) {
+            currentStage++
+            setLoadingStage(currentStage)
+          }
+        }, stage.duration)
+        stageTimers.push(timeout)
+      }
+    })
+
+    return () => {
+      clearInterval(timer)
+      stageTimers.forEach((timeout) => clearTimeout(timeout))
+    }
+  }, [message.isLoading])
+
   const formatTime = (date: Date) => {
     return new Date(date).toLocaleTimeString("en-US", {
       hour: "2-digit",
       minute: "2-digit",
     })
+  }
+
+  const formatElapsedTime = (seconds: number) => {
+    const mins = Math.floor(seconds / 60)
+    const secs = seconds % 60
+    return `${mins}:${secs.toString().padStart(2, "0")}`
   }
 
   const handleOpenVideo = () => {
@@ -54,22 +100,36 @@ export default function MessageItem({ message }: MessageItemProps) {
         </p>
 
         {message.isLoading && (
-          <div className="flex items-center gap-2 mt-3">
-            <div className="flex gap-1.5">
-              <div
-                className="w-2 h-2 bg-black dark:bg-white rounded-full animate-typing"
-                style={{ animationDelay: "0s" }}
-              ></div>
-              <div
-                className="w-2 h-2 bg-black dark:bg-white rounded-full animate-typing"
-                style={{ animationDelay: "0.15s" }}
-              ></div>
-              <div
-                className="w-2 h-2 bg-black dark:bg-white rounded-full animate-typing"
-                style={{ animationDelay: "0.3s" }}
-              ></div>
+          <div className="mt-4 pt-3 border-t border-gray-300/50 dark:border-white/10">
+            <div className="flex items-center gap-3 mb-3">
+              <Loader2 className="w-4 h-4 animate-spin text-black dark:text-white" />
+              <span className="text-gray-700 dark:text-gray-300 text-xs font-semibold">
+                {LOADING_STAGES[loadingStage].text}
+              </span>
             </div>
-            <span className="text-gray-700 dark:text-gray-300 text-xs font-medium">Creating your animation...</span>
+
+            <div className="space-y-2">
+              <div className="w-full bg-gray-200 dark:bg-gray-700 rounded-full h-1.5 overflow-hidden">
+                <div
+                  className="bg-black dark:bg-white h-full rounded-full transition-all duration-1000 ease-linear"
+                  style={{
+                    width: `${Math.min((loadingStage / (LOADING_STAGES.length - 1)) * 100, 95)}%`,
+                  }}
+                />
+              </div>
+
+              <div className="flex items-center justify-between text-xs">
+                <span className="text-gray-600 dark:text-gray-400 font-medium">
+                  Elapsed: {formatElapsedTime(elapsedTime)}
+                </span>
+                <span className="text-gray-600 dark:text-gray-400 font-medium">Est. 2-3 min</span>
+              </div>
+            </div>
+
+            <div className="mt-3 flex items-center gap-2 text-xs text-gray-500 dark:text-gray-400">
+              <Sparkles className="w-3 h-3" />
+              <span className="italic">Creating something amazing for you...</span>
+            </div>
           </div>
         )}
 

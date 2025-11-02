@@ -20,6 +20,21 @@ interface ChatInterfaceProps {
   onSendMessage: (message: string) => void
 }
 
+const EXAMPLE_PROMPTS = [
+  {
+    icon: "∑",
+    text: "Draw y = sin(x) from -π to π",
+  },
+  {
+    icon: "⚛",
+    text: "Visualize electron orbits in a hydrogen atom",
+  },
+  {
+    icon: "▲",
+    text: "Create a rotating cube with mathematical grid",
+  },
+]
+
 export default function ChatInterface({ messages, onSendMessage }: ChatInterfaceProps) {
   const [inputValue, setInputValue] = useState("")
   const [isLoading, setIsLoading] = useState(false)
@@ -45,6 +60,14 @@ export default function ChatInterface({ messages, onSendMessage }: ChatInterface
     } finally {
       setIsLoading(false)
     }
+  }
+
+  const handleExampleClick = (promptText: string) => {
+    setInputValue(promptText)
+    setIsLoading(true)
+    onSendMessage(promptText)
+      .then(() => setIsLoading(false))
+      .catch(() => setIsLoading(false))
   }
 
   const handleKeyPress = (e: React.KeyboardEvent) => {
@@ -74,23 +97,21 @@ export default function ChatInterface({ messages, onSendMessage }: ChatInterface
                 <div className="space-y-3 text-left bg-muted p-6 rounded-2xl border border-border">
                   <p className="text-foreground text-xs font-bold uppercase tracking-widest">Try these:</p>
                   <ul className="text-muted-foreground text-sm space-y-3">
-                    <li className="flex items-start gap-3 p-2 rounded-lg hover:bg-accent transition-all cursor-pointer">
-                      <span className="text-lg mt-0.5">∑</span>
-                      <span className="font-medium">Draw y = sin(x) from -π to π</span>
-                    </li>
-                    <li className="flex items-start gap-3 p-2 rounded-lg hover:bg-accent transition-all cursor-pointer">
-                      <span className="text-lg mt-0.5">⚛</span>
-                      <span className="font-medium">Visualize electron orbits in a hydrogen atom</span>
-                    </li>
-                    <li className="flex items-start gap-3 p-2 rounded-lg hover:bg-accent transition-all cursor-pointer">
-                      <span className="text-lg mt-0.5">▲</span>
-                      <span className="font-medium">Create a rotating cube with mathematical grid</span>
-                    </li>
+                    {EXAMPLE_PROMPTS.map((prompt, index) => (
+                      <li
+                        key={index}
+                        onClick={() => handleExampleClick(prompt.text)}
+                        className="flex items-start gap-3 p-2 rounded-lg hover:bg-accent transition-all cursor-pointer group"
+                      >
+                        <span className="text-lg mt-0.5 group-hover:scale-110 transition-transform">{prompt.icon}</span>
+                        <span className="font-medium group-hover:text-foreground transition-colors">{prompt.text}</span>
+                      </li>
+                    ))}
                   </ul>
                 </div>
 
                 <p className="text-muted-foreground text-xs mt-8 leading-relaxed font-medium">
-                  Rendering takes 3–4 minutes. Grab some coffee while we work our magic ☕
+                  Rendering takes 2–3 minutes. Grab some coffee while we work our magic ☕
                 </p>
               </div>
             </div>

@@ -16,6 +16,11 @@ Your project is live at:
 
 **[https://vercel.com/anshbxnsals-projects/v0-anim-ai](https://vercel.com/anshbxnsals-projects/v0-anim-ai)**
 
+## Build your app
+
+Continue building your app on:
+
+**[https://v0.app/chat/5MFT2QyC09Y](https://v0.app/chat/5MFT2QyC09Y)**
 
 ## How It Works
 

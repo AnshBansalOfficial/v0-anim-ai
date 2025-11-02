@@ -12,6 +12,7 @@ import {
   getChatMessages,
   saveChatMessage,
   deleteChatSession,
+  updateChatSessionTitle,
 } from "@/app/actions/chat"
 
 interface Message {
@@ -132,11 +133,19 @@ export default function DashboardPage() {
     // Save user message to database
     await saveChatMessage(currentSessionId, message, undefined, false, false)
 
+    const isFirstMessage = messages.filter((m) => !m.isResponse).length === 0
+    if (isFirstMessage) {
+      const sessionTitle = message.slice(0, 50) + (message.length > 50 ? "..." : "")
+      await updateChatSessionTitle(currentSessionId, sessionTitle)
+      const updatedSessions = sessions.map((s) => (s.id === currentSessionId ? { ...s, title: sessionTitle } : s))
+      setSessions(updatedSessions)
+    }
+
     // Add loading message
     const loadingMessageId = (Date.now() + 1).toString()
     const initialLoadingMessage: Message = {
       id: loadingMessageId,
-      text: "Thinking...",
+      text: "Analyzing your request...",
       timestamp: new Date(),
       isResponse: true,
       isLoading: true,
@@ -187,13 +196,6 @@ export default function DashboardPage() {
 
       // Save response to database
       await saveChatMessage(currentSessionId, responseText, data.videoUrl, true, false)
-
-      // Update session title if it's the first message
-      if (messages.length === 0) {
-        const sessionTitle = message.slice(0, 50) + (message.length > 50 ? "..." : "")
-        const updatedSessions = sessions.map((s) => (s.id === currentSessionId ? { ...s, title: sessionTitle } : s))
-        setSessions(updatedSessions)
-      }
     } catch (error) {
       console.error("[v0] Error sending message:", error)
       const errorMessage: Message = {
