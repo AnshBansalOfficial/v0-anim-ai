@@ -5,7 +5,7 @@ import type React from "react"
 import { useState } from "react"
 import { Button } from "@/components/ui/button"
 import { ScrollArea } from "@/components/ui/scroll-area"
-import { MessageSquare, Plus, Trash2, LogOut, CreditCard } from "lucide-react"
+import { MessageSquare, Plus, Trash2, LogOut, Sparkles, Clock } from "lucide-react"
 import { createClient } from "@/lib/supabase/client"
 import { useRouter } from "next/navigation"
 import Link from "next/link"
@@ -74,72 +74,144 @@ export default function ChatHistorySidebar({
   const getTierBadgeColor = () => {
     switch (subscriptionTier) {
       case "pro":
-        return "bg-blue-500"
+        return "bg-gradient-to-r from-blue-500 to-blue-600 text-white"
       case "team":
-        return "bg-purple-500"
+        return "bg-gradient-to-r from-purple-500 to-purple-600 text-white"
       case "enterprise":
-        return "bg-amber-500"
+        return "bg-gradient-to-r from-amber-500 to-amber-600 text-white"
       default:
-        return "bg-muted"
+        return "bg-black text-white"
+    }
+  }
+
+  const getTierIcon = () => {
+    switch (subscriptionTier) {
+      case "pro":
+      case "team":
+      case "enterprise":
+        return <Sparkles className="h-3 w-3" />
+      default:
+        return null
     }
   }
 
   return (
     <>
-      <div className="w-64 bg-card border-r border-border flex flex-col h-full">
-        <div className="p-4 border-b border-border">
-          <Button onClick={onNewChat} className="w-full" size="sm">
+      <div className="w-72 bg-gradient-to-b from-card to-card/95 border-r border-border flex flex-col h-full shadow-lg">
+        {/* Header Section with Branding */}
+        <div className="p-4 border-b border-border bg-gradient-to-r from-primary/5 to-primary/10">
+          <div className="flex items-center gap-2 mb-3">
+            <div className="w-8 h-8 bg-gradient-to-br from-primary to-primary/80 rounded-lg flex items-center justify-center shadow-sm">
+              <Sparkles className="text-primary-foreground" size={16} />
+            </div>
+            <div>
+              <h2 className="text-sm font-bold text-foreground">AnimAI Studio</h2>
+              <p className="text-xs text-muted-foreground">Your Workspace</p>
+            </div>
+          </div>
+          <Button onClick={onNewChat} className="w-full shadow-sm hover:shadow-md transition-all" size="sm">
             <Plus className="h-4 w-4 mr-2" />
             New Chat
           </Button>
         </div>
 
-        <ScrollArea className="flex-1 p-2">
-          <div className="space-y-1">
-            {sessions.map((session) => (
-              <div
-                key={session.id}
-                className={`group flex items-center justify-between p-2 rounded-md cursor-pointer hover:bg-accent transition-colors ${
-                  currentSessionId === session.id ? "bg-accent" : ""
-                }`}
-                onClick={() => onSelectSession(session.id)}
-              >
-                <div className="flex items-center gap-2 flex-1 min-w-0">
-                  <MessageSquare className="h-4 w-4 shrink-0" />
-                  <span className="text-sm truncate">{session.title}</span>
-                </div>
-                <Button
-                  variant="ghost"
-                  size="icon"
-                  className="h-6 w-6 opacity-0 group-hover:opacity-100 transition-opacity"
-                  onClick={(e) => handleDeleteClick(session.id, e)}
-                >
-                  <Trash2 className="h-3 w-3" />
-                </Button>
-              </div>
-            ))}
-          </div>
-        </ScrollArea>
-
-        <div className="p-4 border-t border-border space-y-2">
-          <div className="flex items-center gap-2 mb-2">
-            <div className={`px-2 py-1 rounded text-xs font-semibold text-white ${getTierBadgeColor()}`}>
-              {subscriptionTier.toUpperCase()}
+        {/* Chat History Section */}
+        <div className="flex-1 flex flex-col min-h-0">
+          <div className="px-4 py-3 border-b border-border/50">
+            <div className="flex items-center gap-2 text-xs font-semibold text-muted-foreground uppercase tracking-wider">
+              <Clock className="h-3 w-3" />
+              Recent Chats
             </div>
           </div>
-          <div className="text-xs text-muted-foreground truncate mb-2">{userEmail}</div>
-          {subscriptionTier === "free" && (
-            <Button asChild variant="outline" size="sm" className="w-full bg-transparent">
-              <Link href="/pricing">
-                <CreditCard className="h-4 w-4 mr-2" />
-                Upgrade
-              </Link>
+          <ScrollArea className="flex-1 p-3">
+            <div className="space-y-1">
+              {sessions.length === 0 ? (
+                <div className="text-center py-8 px-4">
+                  <MessageSquare className="h-8 w-8 text-muted-foreground/50 mx-auto mb-2" />
+                  <p className="text-xs text-muted-foreground">No chats yet</p>
+                  <p className="text-xs text-muted-foreground/70 mt-1">Start a new conversation</p>
+                </div>
+              ) : (
+                sessions.map((session) => (
+                  <div
+                    key={session.id}
+                    className={`group flex items-center justify-between p-3 rounded-lg cursor-pointer transition-all ${
+                      currentSessionId === session.id
+                        ? "bg-primary/10 border border-primary/20 shadow-sm"
+                        : "hover:bg-accent/50 border border-transparent"
+                    }`}
+                    onClick={() => onSelectSession(session.id)}
+                  >
+                    <div className="flex items-center gap-3 flex-1 min-w-0">
+                      <div
+                        className={`p-1.5 rounded-md ${currentSessionId === session.id ? "bg-primary/20" : "bg-muted"}`}
+                      >
+                        <MessageSquare className="h-3.5 w-3.5 shrink-0" />
+                      </div>
+                      <span className="text-sm font-medium truncate">{session.title}</span>
+                    </div>
+                    <Button
+                      variant="ghost"
+                      size="icon"
+                      className="h-7 w-7 opacity-0 group-hover:opacity-100 transition-opacity hover:bg-destructive/10 hover:text-destructive"
+                      onClick={(e) => handleDeleteClick(session.id, e)}
+                    >
+                      <Trash2 className="h-3.5 w-3.5" />
+                    </Button>
+                  </div>
+                ))
+              )}
+            </div>
+          </ScrollArea>
+        </div>
+
+        {/* User Profile Section */}
+        <div className="p-4 border-t border-border bg-gradient-to-r from-muted/30 to-muted/50 space-y-3">
+          {/* Subscription Badge */}
+          <div className="flex items-center justify-between">
+            <div
+              className={`px-3 py-1.5 rounded-lg text-xs font-bold flex items-center gap-1.5 ${getTierBadgeColor()} shadow-sm`}
+            >
+              {getTierIcon()}
+              {subscriptionTier.toUpperCase()}
+            </div>
+            {sessions.length > 0 && (
+              <div className="text-xs text-muted-foreground font-medium">
+                {sessions.length} chat{sessions.length !== 1 ? "s" : ""}
+              </div>
+            )}
+          </div>
+
+          {/* User Email */}
+          <div className="bg-background/50 rounded-lg p-2.5 border border-border/50">
+            <p className="text-xs text-muted-foreground font-medium truncate">{userEmail}</p>
+          </div>
+
+          {/* Action Buttons */}
+          <div className="space-y-2">
+            {subscriptionTier === "free" && (
+              <Button
+                asChild
+                variant="default"
+                size="sm"
+                className="w-full bg-gradient-to-r from-primary to-primary/90 hover:from-primary/90 hover:to-primary shadow-sm hover:shadow-md transition-all"
+              >
+                <Link href="/pricing">
+                  <Sparkles className="h-4 w-4 mr-2" />
+                  Upgrade Plan
+                </Link>
+              </Button>
+            )}
+            <Button
+              onClick={handleLogout}
+              variant="outline"
+              size="sm"
+              className="w-full hover:bg-destructive/10 hover:text-destructive hover:border-destructive/20 transition-all bg-transparent"
+            >
+              <LogOut className="h-4 w-4 mr-2" />
+              Logout
             </Button>
-          )}
-          <Button onClick={handleLogout} variant="ghost" size="sm" className="w-full">
-            <LogOut className="h-4 w-4 mr-2" />
-            Logout
-          </Button>
+          </div>
         </div>
       </div>
 

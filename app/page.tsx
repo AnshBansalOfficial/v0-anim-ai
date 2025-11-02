@@ -8,8 +8,6 @@ import Link from "next/link"
 import { createClient } from "@/lib/supabase/client"
 import { useRouter } from "next/navigation"
 
-const CHAT_STORAGE_KEY = "animai_guest_chat_history"
-
 interface Message {
   id: string
   text: string
@@ -40,27 +38,8 @@ export default function Home() {
     }
     checkUser()
 
-    // Load guest messages from localStorage
-    const savedMessages = localStorage.getItem(CHAT_STORAGE_KEY)
-    if (savedMessages) {
-      try {
-        const parsedMessages = JSON.parse(savedMessages).map((msg: any) => ({
-          ...msg,
-          timestamp: new Date(msg.timestamp),
-        }))
-        setMessages(parsedMessages)
-      } catch (error) {
-        console.error("[v0] Error loading messages from localStorage:", error)
-      }
-    }
     setIsHydrated(true)
   }, [])
-
-  useEffect(() => {
-    if (isHydrated) {
-      localStorage.setItem(CHAT_STORAGE_KEY, JSON.stringify(messages))
-    }
-  }, [messages, isHydrated])
 
   // Show login prompt after 3 messages
   useEffect(() => {

@@ -30,8 +30,8 @@ const EXAMPLE_PROMPTS = [
     text: "Visualize electron orbits in a hydrogen atom",
   },
   {
-    icon: "▲",
-    text: "Create a rotating cube with mathematical grid",
+    icon: "●",
+    text: "Derive the parameter of a circle",
   },
 ]
 
@@ -101,9 +101,9 @@ export default function ChatInterface({ messages, onSendMessage }: ChatInterface
                       <li
                         key={index}
                         onClick={() => handleExampleClick(prompt.text)}
-                        className="flex items-start gap-3 p-2 rounded-lg hover:bg-accent transition-all cursor-pointer group"
+                        className="flex items-center gap-3 p-2 rounded-lg hover:bg-accent transition-all cursor-pointer group"
                       >
-                        <span className="text-lg mt-0.5 group-hover:scale-110 transition-transform">{prompt.icon}</span>
+                        <span className="text-lg group-hover:scale-110 transition-transform">{prompt.icon}</span>
                         <span className="font-medium group-hover:text-foreground transition-colors">{prompt.text}</span>
                       </li>
                     ))}
