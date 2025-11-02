@@ -1,0 +1,106 @@
+import { Client } from "@langchain/langgraph-sdk"
+
+const LANGGRAPH_API_URL = "https://animai-7ae3101060ad56a4a38c382a0479ece6.us.langgraph.app"
+const LANGGRAPH_API_KEY = "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"
+const LANGGRAPH_ASSISTANT_ID = "fe096781-5601-53d2-b2f6-0d3403f7e9ca"
+
+export async function POST(request: Request) {
+  try {
+    let prompt: string
+    try {
+      const body = await request.json()
+      prompt = body.prompt
+
+      if (!prompt || typeof prompt !== "string") {
+        console.error("[v0] Invalid prompt received:", prompt)
+        return Response.json(
+          {
+            success: false,
+            error: "Invalid prompt provided",
+          },
+          { status: 400 },
+        )
+      }
+    } catch (parseError) {
+      console.error("[v0] Error parsing request body:", parseError)
+      return Response.json(
+        {
+          success: false,
+          error: "Invalid request body",
+        },
+        { status: 400 },
+      )
+    }
+
+    console.log("[v0] API route called with prompt:", prompt)
+
+    const client = new Client({
+      apiUrl: LANGGRAPH_API_URL,
+      apiKey: LANGGRAPH_API_KEY,
+    })
+
+    console.log("[v0] Calling LangGraph assistant:", LANGGRAPH_ASSISTANT_ID)
+
+    const timeoutPromise = new Promise((_, reject) =>
+      setTimeout(() => reject(new Error("Request timeout after 5 minutes")), 300000),
+    )
+
+    const result = await Promise.race([
+      client.runs.wait(
+        null, // null = stateless/memoryless run
+        LANGGRAPH_ASSISTANT_ID,
+        { input: { prompt: prompt } },
+      ),
+      timeoutPromise,
+    ])
+
+    console.log("[v0] LangGraph response received")
+    console.log("[v0] LangGraph response type:", typeof result)
+    console.log("[v0] LangGraph full response:", JSON.stringify(result, null, 2))
+
+    let videoUrl = ""
+    let responseText = ""
+
+    try {
+      if (typeof result === "string") {
+        try {
+          const parsed = JSON.parse(result)
+          videoUrl = parsed?.video_url || parsed?.videoUrl || ""
+          responseText = parsed?.text || ""
+        } catch (parseError) {
+          console.log("[v0] Could not parse result as JSON, treating as text")
+          responseText = result
+        }
+      } else if (typeof result === "object" && result !== null) {
+        // Try multiple possible paths for video URL
+        videoUrl = result?.video_url || result?.videoUrl || result?.output?.video_url || result?.output?.videoUrl || ""
+
+        responseText = result?.text || result?.output?.text || result?.message || ""
+
+        console.log("[v0] Extracted videoUrl:", videoUrl)
+        console.log("[v0] Extracted responseText:", responseText.substring(0, 100))
+      }
+    } catch (extractError) {
+      console.error("[v0] Error extracting fields:", extractError)
+    }
+
+    const response = {
+      success: true,
+      text: responseText || "Your animation has been generated successfully!",
+      videoUrl: videoUrl,
+    }
+
+    console.log("[v0] API returning response:", response)
+    return Response.json(response)
+  } catch (error) {
+    console.error("[v0] API error:", error)
+    console.error("[v0] Error stack:", error instanceof Error ? error.stack : "No stack trace")
+    return Response.json(
+      {
+        success: false,
+        error: error instanceof Error ? error.message : "Failed to generate animation. Please try again.",
+      },
+      { status: 500 },
+    )
+  }
+}
