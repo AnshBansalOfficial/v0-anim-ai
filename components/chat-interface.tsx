@@ -27,11 +27,11 @@ const EXAMPLE_PROMPTS = [
   },
   {
     icon: "⚛",
-    text: "Visualize electron orbits in a hydrogen atom",
+    text: "Plot y = x² and y = √x on the same graph",
   },
   {
     icon: "●",
-    text: "Show a rotating cube on plane centered at origin",
+    text: "Show Lissajous curves (x = A sin at, y = B sin bt)",
   },
 ]
 

@@ -1,8 +1,11 @@
 import { Client } from "@langchain/langgraph-sdk"
+import { createAdminClient } from "@/lib/supabase/admin"
 
 const LANGGRAPH_API_URL = "https://animai-7ae3101060ad56a4a38c382a0479ece6.us.langgraph.app"
 const LANGGRAPH_API_KEY = "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"
 const LANGGRAPH_ASSISTANT_ID = "fe096781-5601-53d2-b2f6-0d3403f7e9ca"
+
+const wait = (ms: number) => new Promise((resolve) => setTimeout(resolve, ms))
 
 export async function POST(request: Request) {
   try {
@@ -33,6 +36,38 @@ export async function POST(request: Request) {
     }
 
     console.log("[v0] API route called with prompt:", prompt)
+
+    try {
+      const supabase = createAdminClient()
+      const { data: cachedResult, error: cacheError } = await supabase
+        .from("prompt_cache")
+        .select("video_url, created_at")
+        .eq("prompt", prompt)
+        .single()
+
+      if (!cacheError && cachedResult?.video_url) {
+        console.log("[v0] Cache hit! Found cached video URL for prompt")
+        console.log("[v0] Cached video URL:", cachedResult.video_url)
+        console.log("[v0] Cache entry created at:", cachedResult.created_at)
+
+        console.log("[v0] Waiting 60 seconds before returning cached result...")
+        await wait(60000)
+
+        const response = {
+          success: true,
+          text: "Your animation has been generated successfully!",
+          videoUrl: cachedResult.video_url,
+        }
+
+        console.log("[v0] Returning cached response after 1 minute delay")
+        return Response.json(response)
+      }
+
+      console.log("[v0] Cache miss. Proceeding to call LangGraph...")
+    } catch (cacheCheckError) {
+      console.error("[v0] Error checking cache:", cacheCheckError)
+      // Continue to LangGraph if cache check fails
+    }
 
     const client = new Client({
       apiUrl: LANGGRAPH_API_URL,
@@ -82,6 +117,30 @@ export async function POST(request: Request) {
       }
     } catch (extractError) {
       console.error("[v0] Error extracting fields:", extractError)
+    }
+
+    if (videoUrl) {
+      try {
+        const supabase = createAdminClient()
+        const { error: insertError } = await supabase.from("prompt_cache").upsert(
+          {
+            prompt: prompt,
+            video_url: videoUrl,
+          },
+          {
+            onConflict: "prompt",
+          },
+        )
+
+        if (insertError) {
+          console.error("[v0] Error saving to cache:", insertError)
+        } else {
+          console.log("[v0] Successfully saved result to cache")
+        }
+      } catch (cacheSaveError) {
+        console.error("[v0] Error saving to cache:", cacheSaveError)
+        // Don't fail the request if cache save fails
+      }
     }
 
     const response = {
