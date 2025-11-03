@@ -42,7 +42,7 @@ export async function POST(request: Request) {
     console.log("[v0] Calling LangGraph assistant:", LANGGRAPH_ASSISTANT_ID)
 
     const timeoutPromise = new Promise((_, reject) =>
-      setTimeout(() => reject(new Error("Request timeout after 5 minutes")), 600000),
+      setTimeout(() => reject(new Error("Request timeout after 5 minutes")), 60000000),
     )
 
     const result = await Promise.race([
