@@ -78,7 +78,7 @@ export default function ChatInterface({ messages, onSendMessage }: ChatInterface
   }
 
   return (
-    <div className="flex flex-col h-full bg-background pt-35">
+    <div className="flex flex-col h-full bg-background pt-20">
       {/* Messages Area */}
       <div className="flex-1 overflow-y-auto flex flex-col items-center w-full px-4">
         <div className="w-full max-w-3xl py-4">
