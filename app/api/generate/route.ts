@@ -1,7 +1,7 @@
 import { Client } from "@langchain/langgraph-sdk"
 import { createAdminClient } from "@/lib/supabase/admin"
 
-export const maxDuration = 300 // Maximum allowed on Vercel Pro plan
+export const maxDuration = 60
 export const dynamic = "force-dynamic" // Ensure this route is not cached
 
 const LANGGRAPH_API_URL = "https://animai-7ae3101060ad56a4a38c382a0479ece6.us.langgraph.app"
@@ -91,6 +91,7 @@ export async function POST(request: Request) {
 
     let videoUrl = ""
     let responseText = ""
+    let nonAnimationReply = ""
 
     try {
       if (typeof result === "string") {
@@ -98,6 +99,7 @@ export async function POST(request: Request) {
           const parsed = JSON.parse(result)
           videoUrl = parsed?.video_url || parsed?.videoUrl || ""
           responseText = parsed?.text || ""
+          nonAnimationReply = parsed?.non_animation_reply || ""
         } catch (parseError) {
           console.log("[v0] Could not parse result as JSON, treating as text")
           responseText = result
@@ -108,11 +110,26 @@ export async function POST(request: Request) {
 
         responseText = result?.text || result?.output?.text || result?.message || ""
 
+        nonAnimationReply = result?.non_animation_reply || result?.output?.non_animation_reply || ""
+
         console.log("[v0] Extracted videoUrl:", videoUrl)
         console.log("[v0] Extracted responseText:", responseText.substring(0, 100))
+        console.log("[v0] Extracted nonAnimationReply:", nonAnimationReply.substring(0, 100))
       }
     } catch (extractError) {
       console.error("[v0] Error extracting fields:", extractError)
+    }
+
+    if (nonAnimationReply) {
+      console.log("[v0] Non-animation reply detected, returning text-only response")
+      const response = {
+        success: true,
+        text: nonAnimationReply,
+        videoUrl: undefined, // No video URL for non-animation replies
+      }
+
+      console.log("[v0] API returning non-animation response:", response)
+      return Response.json(response)
     }
 
     if (videoUrl) {
