@@ -13,14 +13,14 @@ const GALLERY_ITEMS = [
     date: "2024-01-15",
   },
   {
-    title: "Plot a 3D spiral curve expanding along the z-axis",
+    title: "Plot a 3D Spiral Curve expanding along the Z-Axis",
     videoUrl: "https://pub-b215a097b7b243dc86da838a88d50339.r2.dev/media/videos/Spiral3DScene/480p15/Spiral3DScene.mp4",
     date: "2024-01-14",
   },
   {
-    title: "Derive the Formula for Thales Theorem",
+    title: "Explain Binary Search in an Array",
     videoUrl:
-      "https://pub-b215a097b7b243dc86da838a88d50339.r2.dev/media/videos/ThalesTheoremDerivation/480p15/ThalesTheoremDerivation.mp4",
+      "https://pub-b215a097b7b243dc86da838a88d50339.r2.dev/media/videos/BinarySearchTutorial/480p15/BinarySearchTutorial.mp4",
     date: "2024-01-13",
   },
   {
@@ -30,13 +30,13 @@ const GALLERY_ITEMS = [
     date: "2024-01-12",
   },
   {
-    title: "Particle System",
-    videoUrl: "PASTE_VIDEO_URL_HERE_5",
+    title: "Visualize Electron Orbits in a Hydrogen Atom",
+    videoUrl: "https://pub-b215a097b7b243dc86da838a88d50339.r2.dev/media/videos/HydrogenAtomOrbits/480p15/HydrogenAtomOrbits.mp4",
     date: "2024-01-11",
   },
   {
-    title: "Fractal Geometry",
-    videoUrl: "PASTE_VIDEO_URL_HERE_6",
+    title: "Draw y = sin(x) from -π to π",
+    videoUrl: "https://pub-b215a097b7b243dc86da838a88d50339.r2.dev/media/videos/SineCurveWithKeyPoints/480p15/SineCurveWithKeyPoints.mp4",
     date: "2024-01-10",
   },
 ]
