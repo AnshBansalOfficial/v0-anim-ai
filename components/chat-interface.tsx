@@ -13,6 +13,7 @@ interface Message {
   videoUrl?: string
   isResponse?: boolean
   isLoading?: boolean
+  message?: boolean
 }
 
 interface ChatInterfaceProps {
