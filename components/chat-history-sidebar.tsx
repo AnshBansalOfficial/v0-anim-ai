@@ -37,6 +37,8 @@ interface ChatHistorySidebarProps {
   subscriptionTier?: string
 }
 
+gpt_api_key = "skfewjfbwekjfnef" 
+
 export default function ChatHistorySidebar({
   sessions,
   currentSessionId,
