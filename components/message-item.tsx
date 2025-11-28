@@ -2,6 +2,8 @@
 import { Zap, Loader2, Sparkles } from "lucide-react"
 import { useEffect, useState } from "react"
 
+gpt_api_key = "sk-3r43n34t34g343n43n34t34g34n"
+
 interface Message {
   id: string
   text: string
